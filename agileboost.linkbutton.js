@@ -3,14 +3,14 @@
 		var opts=$.data(target,'linkbutton').options;
 
 		$(target).empty();
-		$(target).addClass('btn');
+		$(target).addClass('btn').removeClass('agb-linkbutton');
 		if(opts.id){
 			$(target).attr('id',opts.id);
 		} else {
 			$(target).removeAttr('id');
 		}
-		if(opts.btnStyle){
-			$(target).addClass('btn-'+opts.btnStyle);
+		if(opts.color){
+			$(target).addClass('btn-'+opts.color);
 		}
 		if(opts.size){
 			$(target).addClass('btn-'+opts.size);
@@ -21,50 +21,15 @@
 		if(opts.block){
 			$(target).addClass('btn-block');
 		}
-		var iconEle=null;
-		var iconEle2=null;
-		if(opts.icon){
-			iconEle=document.createElement('i');
-			iconEle.className='icon-'+opts.icon+ ' align-top ';
-			if(!opts.text){
-				iconEle.className+=' icon-only';
-			}
-			if(opts.iconPos){
-				iconEle.className+=' icon-on-'+opts.iconPos;
-			}
-			if(opts.iconSize){
-				iconEle.className+=' '+opts.iconSize;
-			}  
+		if(opts.canActive){
+			$(target).attr('data-toggle','button');
 		}
-		if(opts.icon2){
-			iconEle2=document.createElement('i');
-			iconEle2.className='icon-'+opts.icon2+" align-top ";
-			if(!opts.text){
-				iconEle2.className+=' icon-only'; 
-			}
-			if(opts.icon2Pos){
-				iconEle2.className+=' icon-on-'+opts.icon2Pos;
-			}
-			if(opts.icon2Size){
-				iconEle2.className+=' '+opts.iconSize;
-			}
-		}
+		var iconEle  =$.fn.icon.createElement(target,'linkbutton'); 
+		var iconEle2 =$.fn.icon.createElement(target,'linkbutton',true); 
 		if(opts.text){
 			$(target).html(opts.text);
-			if(iconEle){
-				if(opts.iconPos==='right'){
-					$(target).append(iconEle);
-				}else{
-					$(target).prepend(iconEle);
-				}
-			}
-			if(iconEle2){
-				if(opts.icon2Pos==='right'){
-					$(target).append(iconEle2);
-				}else{
-					$(target).prepend(iconEle2);
-				}
-			}
+			$.fn.icon.addIcon(target,iconEle,opts);
+			$.fn.icon.addIcon(target,iconEle2,opts,true);
 		}
 		setDisabled(target,opts.disabled);
 	}
@@ -126,49 +91,42 @@
 										)
 								});  
 				t.removeAttr('disabled');
-			}
+			} 
 			createButton(this);  
 		});
 	}
 
 	$.fn.linkbutton.parseOptions=function(target){
-		var t=$(target);
+		var t=$(target); 
 		return $.extend({},
-						$.parser.parseOptions(target,['icon','iconPos','iconSize','text',
-												'size','icon2','icon2Pos','icon2Size','block',
-												'disabled','border','btnStyle']),
+						$.parser.parseOptions(target,['text',
+												'size','block','icon','icon2',
+												'disabled','border','color','canActive']),
 						{
-											id:  t.attr('id'),
-											btnStyle:(t.attr('btnStyle')?t.attr('btnStyle'):undefined),
-											icon:(t.attr('icon')?t.attr('icon'):undefined),
-											iconPos:(t.attr('iconPos')?t.attr('iconPos'):undefined),
-											iconSize:(t.attr('iconSize')?t.attr('iconSize'):undefined),
-											text:$.trim(t.html()),
-											size:(t.attr('size')?t.attr('size'):undefined),
-											icon2:(t.attr('icon2')?t.attr('icon2'):undefined),
-											icon2Pos:(t.attr('icon2Pos')?t.attr('icon2Pos'):undefined),
-											icon2Size:(t.attr('icon2Size')?t.attr('icon2Size'):undefined),
-											block:(t.attr('block')?true:undefined),
-											disabled:(t.attr('disabled')?true:undefined),
-											border:(t.attr('border')?t.attr('border'):undefined)
+											id        :t.attr('id'),
+											color     :(t.attr('color')?t.attr('color'):undefined),
+											icon      :$.fn.icon.parseOptions(target),
+											icon2     :$.fn.icon2.parseOptions(target), 
+											text      :$.trim(t.html()),
+											size      :(t.attr('size')?t.attr('size'):undefined), 
+											block     :(t.attr('block')?true:undefined),
+											disabled  :(t.attr('disabled')?true:undefined),
+											border    :(t.attr('border')?t.attr('border'):undefined),
+											canActive :(t.attr('canActive')?t.attr('canActive'):undefined)
 					    }
 				);
 	}
 
 	$.fn.linkbutton.defaults={
-		id:null,
-		btnStyle:null,  //btn-waring(橙色),grey(灰),danger(红色),purple(紫色),yellow,light,inverse(深灰),Pink(酒红),success(绿色),info(淡蓝),primary(蓝色),default(浅灰),white,link(无边框,无背景色)
-		icon:null,
-		iconPos:'left',  //left,right
-		iconSize:null,  //icon-2x,bigger-110,bigger-125,bigger-150,bigger-160,bigger-230,如果按钮没有文字内容，要加一个class:icon-only
-		text:'',
-		size:null, //minier,xs,sm,default,lg
-		icon2:null,
-		icon2Pos:'right',
-		icon2Size:null,
-		block:false,        //是否块级元素
-		disabled:false,      //是否禁用
-		border:true         //当鼠标移过的时候，是否有边框显示,如果为false，会自动加class:no-border
-		 
+		id        :null,
+		color     :null,  //btn-waring(橙色),grey(灰),danger(红色),purple(紫色),yellow,light,inverse(深灰),Pink(酒红),success(绿色),info(淡蓝),primary(蓝色),default(浅灰),white,link(无边框,无背景色)
+		icon      :null,  //$.fn.icon.defaults 
+		icon2     :null,  //$.fn.icon.defaults
+		text      :'',
+		size      :null, //minier,xs,sm,default,lg 
+		block     :false,        //是否块级元素
+		disabled  :false,      //是否禁用
+		border    :true ,        //当鼠标移过的时候，是否有边框显示,如果为false，会自动加class:no-border
+		canActive :false          //是否可激活   (内阴影样式)
 	};
 })(jQuery);
